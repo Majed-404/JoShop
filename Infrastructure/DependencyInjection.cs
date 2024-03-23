@@ -1,7 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.Data;
-
+using Microsoft.AspNetCore.Identity;
+ 
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class DependencyInjection
@@ -13,7 +14,7 @@ public static class DependencyInjection
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
             options.UseSqlServer(connectionString);
-        });
+        }); 
 
         return services;
     }

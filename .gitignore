@@ -478,3 +478,5 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+/WebApi/appsettings.json
+/Web-UI/package-lock.json
