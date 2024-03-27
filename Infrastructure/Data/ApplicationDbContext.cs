@@ -7,8 +7,8 @@ public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-    public Product Products { get; set; }
-    public ProductAttachments ProductAttachments { get; set; }
+    public DbSet<Product> Products { get; set; }
+    public DbSet<ProductAttachments> ProductAttachments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
