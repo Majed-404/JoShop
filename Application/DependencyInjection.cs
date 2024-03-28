@@ -1,4 +1,5 @@
-﻿namespace Microsoft.Extensions.DependencyInjection;
+﻿ 
+namespace Microsoft.Extensions.DependencyInjection;
 
 public static class DependencyInjection
 {
