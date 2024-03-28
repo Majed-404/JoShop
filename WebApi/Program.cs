@@ -1,9 +1,8 @@
 
-using Application.Seeds;
-using Domain;
-using Infrastructure.Data;
+using Infrastructure.ApplicationUserAggregate;
+using Infrastructure.Seeds;
 using Microsoft.AspNetCore.Identity;
-using static Application.Seeds.DefaultUsers;
+using static Infrastructure.Seeds.DefaultUsers;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -23,7 +23,7 @@ namespace WebApi.Controllers
 
             var result = await _authService.RegisterAsync(model);
 
-            if (!result.IsAuthenticated)
+            if (!result.IsRegister)
                 return BadRequest(result.Message);
 
             return Ok(result);
@@ -35,7 +35,7 @@ namespace WebApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _authService.GetTokenAsync(model);
+            var result = await _authService.AuthAsync(model);
 
             if (!result.IsAuthenticated)
                 return BadRequest(result.Message);

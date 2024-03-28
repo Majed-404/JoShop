@@ -1,13 +1,8 @@
-﻿using Domain;
-using Domain.Consts;
+﻿ using Domain.Consts;
+using Infrastructure.ApplicationUserAggregate;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Application.Seeds
+ 
+namespace Infrastructure.Seeds
 {
     public static partial class DefaultUsers
     {
@@ -15,7 +10,7 @@ namespace Application.Seeds
         {
             var admin = new ApplicationUser
             {
-                UserName = "joe", 
+                UserName = "joe",
                 Email = "joe@joeshop.com",
                 EmailConfirmed = true
 

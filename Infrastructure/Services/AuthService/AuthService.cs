@@ -1,7 +1,8 @@
-﻿using Application.Helpers;
+﻿using Infrastructure.Helpers;
+using Application.Services.AuthSercvices;
 using Application.Services.AuthSercvices.Models;
-using Domain;
-using Domain.Consts;
+ using Domain.Consts;
+using Infrastructure.ApplicationUserAggregate;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -9,7 +10,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
  
-namespace Application.Services.AuthSercvices
+namespace Infrastructure.Services.AuthSercvices
 {
     public class AuthService :IAuthService
     {
@@ -23,21 +24,22 @@ namespace Application.Services.AuthSercvices
             _roleManager = roleManager;
             _jwt = jwt.Value;
         }
-        public async Task<AuthModel> RegisterAsync(RegisterModel model)
+        public async Task<RegisterResponseModel> RegisterAsync(RegisterModel model)
         {
-            if (await _userManager.FindByEmailAsync(model.Email) is not null)
-                return new AuthModel { Message = "Something went wrong with email!" };
-
-            if (await _userManager.FindByNameAsync(model.Username) is not null)
-                return new AuthModel { Message = "Something went wrong with username!" };
+            bool isEmailExist = await _userManager.FindByEmailAsync(model.Email) is not null;
+            if (isEmailExist)
+                return new RegisterResponseModel { Message = "Something went wrong with email!" };
+            
+            bool isUsernameExist = await _userManager.FindByEmailAsync(model.Email) is not null; 
+            if (isUsernameExist)
+                return new RegisterResponseModel { Message = "Something went wrong with username!" };
 
             var user = new ApplicationUser
             {
                 UserName = model.Username,
                 Email = model.Email,
             
-            };
-
+            }; 
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (!result.Succeeded)
@@ -47,26 +49,19 @@ namespace Application.Services.AuthSercvices
                 foreach (var error in result.Errors)
                     errors += $"{error.Description},";
 
-                return new AuthModel { Message = errors };
+                return new RegisterResponseModel { Message = errors };
             }
-
-            await _userManager.AddToRoleAsync(user, AppRoles.Customer);
-
-            var jwtSecurityToken = await CreateJwtToken(user);
-
-            return new AuthModel
+            //ToDo:: Modify to set user Role based on the RegisterAsync calling (From App / Dashboard) 
+            await _userManager.AddToRoleAsync(user, AppRoles.Customer); 
+            return new RegisterResponseModel
             {
-                Email = user.Email,
-                ExpiresOn = jwtSecurityToken.ValidTo,
-                IsAuthenticated = true,
-                Roles = new List<string> { AppRoles.Customer},
-                 Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
-                Username = user.UserName
-            };
+                  IsRegister= true,
+                  Message= "Register successfully" ,
+             };
         }
 
 
-        public async Task<AuthModel> GetTokenAsync(TokenRequestModel model)
+        public async Task<AuthModel> AuthAsync(TokenRequestModel model)
         {
             var authModel = new AuthModel();
 
@@ -78,16 +73,10 @@ namespace Application.Services.AuthSercvices
                 return authModel;
             }
 
-            var jwtSecurityToken = await CreateJwtToken(user);
-            var rolesList = await _userManager.GetRolesAsync(user);
-
+            var jwtSecurityToken = await CreateJwtToken(user); 
             authModel.IsAuthenticated = true;
             authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
-            authModel.Email = user.Email;
-            authModel.Username = user.UserName;
-            authModel.ExpiresOn = jwtSecurityToken.ValidTo;
-            authModel.Roles = rolesList.ToList();
-
+            
             return authModel;
         }
         private async Task<JwtSecurityToken> CreateJwtToken(ApplicationUser user)
